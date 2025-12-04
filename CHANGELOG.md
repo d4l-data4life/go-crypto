@@ -22,3 +22,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 ### Changed
+
+## [v1.0.0]
+
+### Changed
+
+- Move to d4l-data4life
+
+[Unreleased]: https://github.com/d4l-data4life/go-crypto/compare/v1.0.0...HEAD
+[v1.0.0]: https://github.com/d4l-data4life/go-crypto/releases/tag/v1.0.0

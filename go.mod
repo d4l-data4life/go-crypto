@@ -1,6 +1,6 @@
 module github.com/d4l-data4life/go-crypto
 
-go 1.25
+go 1.24.0
 
 require (
 	github.com/ethereum/go-ethereum v1.16.7
