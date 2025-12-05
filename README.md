@@ -1,7 +1,7 @@
 # Go-Crypto Library
 
 This is the Go-Library that wraps reusable cryptographic functions used within D4L.
-It is used by the [Consent Service](https://github.com/gesundheitscloud/consent-management) and 
+It is used by the [Consent Service](https://github.com/gesundheitscloud/consent-management) and
 [Data Donation Service](https://github.com/gesundheitscloud/cov-donation)
 to implement the crypto protocols for consent signing, secure data donation and revocation.
 
@@ -160,7 +160,7 @@ d2d0a9d770d5417d766128c48d2b2288529fc910b02ca11902c826693d3835a1
 
 ## License
 
-(c) 2020 D4L data4life gGmbH / All rights reserved. Please refer to our [License](./LICENSE) for further details.
+(c) 2025 D4L data4life gGmbH / All rights reserved. Please refer to our [License](./LICENSE) for further details.
 
 ## Code of conduct
 
