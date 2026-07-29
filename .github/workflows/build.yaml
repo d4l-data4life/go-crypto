@@ -11,20 +11,20 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: d4l-data4life/github-actions/build-setup@main
         with:
           setup-go: true
 
       - name: Lint
-        uses: golangci/golangci-lint-action@v7
+        uses: golangci/golangci-lint-action@v8
         with:
-          version: v2.0
+          version: v2.6
 
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: d4l-data4life/github-actions/build-setup@main
         with:
           setup-go: true
@@ -37,7 +37,8 @@ jobs:
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
+        # Dependabot-triggered runs have a read-only token: creating check-runs 403s.
+        if: always() && github.actor != 'dependabot[bot]'
         with:
           files: |
             report.xml
