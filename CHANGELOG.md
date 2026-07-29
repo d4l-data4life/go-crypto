@@ -9,22 +9,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [v1.1.0] - 2026-07-30
+
+### Added
+
 - v4 hybrid encryption (slot-based): `EncryptHybridV4` wraps the payload data key into one slot
   per recipient — `ECSlot` (ECIES over secp256k1), `RSASlot` (RSA-OAEP) or `AESSlot`
-  (AES-symmetric). The `Decrypter` holds a keychain of keys and decodes v4 records in addition
   to v1–v3, opening a slot only with a key whose `(decrypterID, keyAlg)` match and trying every
   match — so a slot addressed to another recipient is refused and rotated keys keep decrypting.
-  `NewDecrypter` / `NewDecrypterWithRecoveryKey` still work; build an explicit keychain with
-  `RSAKey`/`ECKey`/`AESKey` + `NewDecrypterFromKeys`. See README.md → Hybrid Encryption →
   Version 4.
 
 ### Changed
 
 - Move to d4l-data4life
-
-### Deprecated
-
-### Removed
 
 ### Fixed
 
@@ -33,13 +40,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   length overflowing the block-size round-up into a slicing panic; v3 recovery branch with a
   non-block-multiple key blob panicking in CBC `CryptBlocks`).
 
-### Security
-
-## [v1.0.0]
+## [v1.0.0] - 
 
 ### Changed
 
 - Move to d4l-data4life
 
-[Unreleased]: https://github.com/d4l-data4life/go-crypto/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/d4l-data4life/go-crypto/compare/v1.1.0...HEAD
+[v1.1.0]: https://github.com/d4l-data4life/go-crypto/compare/v1.0.0...v1.1.0
 [v1.0.0]: https://github.com/d4l-data4life/go-crypto/releases/tag/v1.0.0
