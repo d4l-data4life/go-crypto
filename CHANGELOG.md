@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- v4 hybrid encryption (slot-based): `EncryptHybridV4` wraps the payload data key into one slot
+  per recipient — `ECSlot` (ECIES over secp256k1), `RSASlot` (RSA-OAEP) or `AESSlot`
+  (AES-symmetric). The `Decrypter` holds a keychain of keys and decodes v4 records in addition
+  to v1–v3, opening a slot only with a key whose `(decrypterID, keyAlg)` match and trying every
+  match — so a slot addressed to another recipient is refused and rotated keys keep decrypting.
+  `NewDecrypter` / `NewDecrypterWithRecoveryKey` still work; build an explicit keychain with
+  `RSAKey`/`ECKey`/`AESKey` + `NewDecrypterFromKeys`. See README.md → Hybrid Encryption →
+  Version 4.
+
 ### Changed
 
 - Move to d4l-data4life
@@ -19,9 +28,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-### Security
+- `Decrypter.Decrypt` no longer trusts on-wire length fields: corrupt or malicious records
+  now fail with a clean error instead of triggering huge allocations or panics (v1 plaintext
+  length overflowing the block-size round-up into a slicing panic; v3 recovery branch with a
+  non-block-multiple key blob panicking in CBC `CryptBlocks`).
 
-### Changed
+### Security
 
 ## [v1.0.0]
 

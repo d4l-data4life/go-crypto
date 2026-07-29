@@ -8,8 +8,8 @@ to implement the crypto protocols for consent signing, secure data donation and 
 ## Hybrid Encryption
 
 Hybrid encryption is the combination of a symmetric and an asymmetric encryption and used where asymmetric encryption would be required,
-but is too slow or limited in the length of possible plaintexts. We use it to encrypt JSON strings addressed to the Data Donation Service
-or donated resources addressed to the ALP.
+but is too slow or limited in the length of possible plaintexts. We use it to encrypt JSON strings addressed to the Data Donation Service,
+donated resources addressed to the ALP, and polled API payloads (e.g. Garmin summaries) the data-collector encrypts to the participant's phone.
 
 The hybrid-encypted message we use is a byte array where fields are serialized as byte arrays and concatenated in that order.
 All numbers (key and plaintext lengths) use little endian byte order. The number of bytes each field consumes is shown below next to the field description.
@@ -61,7 +61,56 @@ the *encKey_don* part of the message.
 | ciphertextLen | length of ciphertext                          | 8             | `0x24 0x00 0x00 0x00 0x00 0x00 0x00 0x00` (36) |
 | ciphertext    | AES GCM encrypted data                        | ciphertextLen | `0x79 0x64 0x35 ...` (36 bytes)                |
 
+### Version 4 (slot-based, multi-recipient; default for the data-collector → phone path)
 
+Versions 1–3 hard-code their recipients (one RSA target, optionally one recovery branch).
+Version 4 makes recipients explicit and open-ended: the plaintext is encrypted once with AES in GCM block mode using a random
+symmetric key of 256 bits (data key) and a random 96 bit initialisation vector, and the data key is wrapped once per recipient
+into a *slot*, each tagged with a decrypter id and a key-wrap algorithm. A new recipient or key type needs no new version byte —
+just a new slot.
+
+| field      | description                          | size in bytes | example                                        |
+|------------|--------------------------------------|---------------|------------------------------------------------|
+| version    | version to support new formats       | 1             | `0x04`                                         |
+| payloadAlg | payload cipher (0 = AES-256-GCM)     | 1             | `0x00`                                         |
+| slotCount  | number of recipient slots            | 1             | `0x01`                                         |
+| slots      | slotCount × slot (see below)         | Σ slot sizes  |                                                |
+| payloadIv  | initialisation vector (GCM, 96 bit)  | 12            | `0x55 0x55 ...` (12 bytes)                     |
+| payloadLen | length of payload                    | 8             | `0x2c 0x00 0x00 0x00 0x00 0x00 0x00 0x00` (44) |
+| payload    | AES GCM encrypted plaintext ‖ tag    | payloadLen    | `0x22 0x30 0xbf ...` (44 bytes)                |
+
+Each slot:
+
+| field       | description                                        | size in bytes | example            |
+|-------------|----------------------------------------------------|---------------|--------------------|
+| decrypterId | recipient id (0 = mobile app, 1 = data receiver)   | 1             | `0x00`             |
+| keyAlg      | key-wrap algorithm (see below)                     | 1             | `0x02`             |
+| slotLen     | length of the slot body                            | 2             | `0x7d 0x00` (125)  |
+| slot        | wrapped data key (layout depends on keyAlg)        | slotLen       |                    |
+
+Key-wrap algorithms and their slot bodies:
+
+| keyAlg | wrap                                                              | slot body                                             |
+|-------:|-------------------------------------------------------------------|-------------------------------------------------------|
+| `0`    | AES-256-GCM under a symmetric key (e.g. the donor's recovery key) | nonce(12) ‖ wrappedDataKey‖tag(48)                    |
+| `1`    | RSA-OAEP / SHA-256 to an RSA public key                           | RSA ciphertext                                        |
+| `2`    | ECIES to a secp256k1 public key                                   | ephPub(65, uncompressed) ‖ nonce(12) ‖ wrappedDataKey‖tag(48) |
+
+The EC slot (keyAlg 2) is how the data-collector encrypts Garmin summaries so that **only the participant's phone** can read
+them: generate an ephemeral secp256k1 keypair, ECDH between the ephemeral private key and the phone's public key, derive the
+wrapping key with HKDF-SHA256 (salt `d4l/hybrid-v4/ec/salt`, info `d4l/hybrid-v4/ec/secp256k1/aes256gcm` — these MUST be
+byte-identical in every implementation), then wrap the data key with AES-256-GCM. The ephemeral public key travels uncompressed
+(65 bytes, `0x04‖X‖Y`, `elliptic.Marshal`) to sidestep the well-known secp256k1 compressed-encoding interop pitfalls, and ECDH
+X coordinates are left-padded to 32 bytes before the KDF.
+
+API: `EncryptHybridV4(plaintext, slots...)` encrypts with `ECSlot`/`RSASlot`/`AESSlot` slot builders. `Decrypter.Decrypt`
+reads v4 in addition to v1–v3: it opens a slot only with a keychain key whose `(decrypterId, keyAlg)` match, trying every
+matching key, so rotated keys keep decrypting and a slot addressed to another recipient is refused. Keychains come from the
+unchanged `NewDecrypter` / `NewDecrypterWithRecoveryKey` constructors, or explicitly via `RSAKey`/`ECKey`/`AESKey` +
+`NewDecrypterFromKeys`. Encryption is v4-only for new code paths; decryption stays backward compatible, so a caller adopting
+v4 still reads all older resources. The phone-side counterpart is collect-lib's `HybridEncrypter.encryptV4` / `decryptV4`
+(keys passed base64-encoded like the rest of collect-lib); both sides are pinned byte-for-byte by the version 4 test fixture
+below.
 
 ## Test Fixtures
 
@@ -156,6 +205,34 @@ d2d0a9d770d5417d766128c48d2b2288529fc910b02ca11902c826693d3835a1
 2c20ed26c345b12282d37e79cc8cc8cc0b94bd602400000000000000763de4e1
 51c695c03f80e88740066dd9a11519e05a78f82f8ebde6e74f839daeb092851c
 00
+```
+
+### Version 4
+
+Version 4 uses its own cross-language test vector, produced by `d4lcrypto.TestHybridV4_DeterministicVector` and decoded by
+collect-lib's `hybridEncryption.spec.ts` — if either side drifts from the wire format, the vector breaks in both CIs.
+Given the plaintext
+
+```json
+{"hello":"garmin","spo2":97}
+```
+
+and the phone's secp256k1 private key (hex scalar)
+
+```
+c87509a1c067115d2a8f8e7c1f3a9b6d4e2f0a1b3c5d7e9f00112233445566aa
+```
+
+a hex encoded hybrid-encrypted message version 4 (one ECIES slot addressed to the mobile app) looks as follows:
+
+```hex
+04000100027d00043c72addb4fdf09af94f0c94d7fe92a386a7e70cf8a1d8591
+6386bb2535c7b1b13b306b0fe085665d8fc1b28ae1676cd3ad6e08eaeda225fe
+38d0da4de55703e0444444444444444444444444dfdb305d6f45f9d940906561
+ea1dc62a5998ba99030320fdb830c6d6d862157c2e043d9be275dab74fb10eda
+0b28696e5555555555555555555555552c000000000000002230bfd7b58a8ada
+d1e7049886fd3178694ca9008c1b66c9eff0d19c5b9ad50a7b7eafc3212444e2
+e0e40859
 ```
 
 ## License
