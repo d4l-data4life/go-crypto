@@ -108,9 +108,9 @@ reads v4 in addition to v1–v3: it opens a slot only with a keychain key whose 
 matching key, so rotated keys keep decrypting and a slot addressed to another recipient is refused. Keychains come from the
 unchanged `NewDecrypter` / `NewDecrypterWithRecoveryKey` constructors, or explicitly via `RSAKey`/`ECKey`/`AESKey` +
 `NewDecrypterFromKeys`. Encryption is v4-only for new code paths; decryption stays backward compatible, so a caller adopting
-v4 still reads all older resources. The phone-side counterpart is collect-lib's `HybridEncrypter.encryptV4` / `decryptV4`
-(keys passed base64-encoded like the rest of collect-lib); both sides are pinned byte-for-byte by the version 4 test fixture
-below.
+v4 still reads all older resources. The phone-side counterpart is the mobile client's TypeScript implementation of the same
+format; the version 4 test fixture below pins these bytes, and the client pins them in its own suite, so neither side can
+drift unnoticed.
 
 ## Test Fixtures
 
@@ -209,8 +209,8 @@ d2d0a9d770d5417d766128c48d2b2288529fc910b02ca11902c826693d3835a1
 
 ### Version 4
 
-Version 4 uses its own cross-language test vector, produced by `d4lcrypto.TestHybridV4_DeterministicVector` and decoded by
-collect-lib's `hybridEncryption.spec.ts` — if either side drifts from the wire format, the vector breaks in both CIs.
+Version 4 uses its own wire-format vector, produced and pinned by `d4lcrypto.TestHybridV4_DeterministicVector`. Client
+implementations pin the same bytes in their own test suites, so a drift on either side breaks a build.
 Given the plaintext
 
 ```json

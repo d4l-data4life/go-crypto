@@ -59,7 +59,7 @@ const (
 )
 
 // hybridV4ECSalt and hybridV4ECInfo bind the HKDF output to this scheme; they MUST be
-// byte-identical to the collect-lib (phone) implementation.
+// byte-identical to the phone-side implementation.
 var (
 	hybridV4ECSalt = []byte("d4l/hybrid-v4/ec/salt")
 	hybridV4ECInfo = []byte("d4l/hybrid-v4/ec/secp256k1/aes256gcm")
