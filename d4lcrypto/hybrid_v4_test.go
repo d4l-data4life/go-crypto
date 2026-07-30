@@ -49,7 +49,8 @@ func TestHybridV4_WrongDecrypterID(t *testing.T) {
 }
 
 const (
-	// Canonical cross-language vector (shared with collect-lib's hybridEncryption.test.ts).
+	// Canonical wire-format vector. Client implementations of this format pin the same bytes,
+	// so a drift on either side shows up as a failure here.
 	vectorScalarHex = "c87509a1c067115d2a8f8e7c1f3a9b6d4e2f0a1b3c5d7e9f00112233445566aa"
 	vectorPlaintext = `{"hello":"garmin","spo2":97}`
 	//nolint:lll // pinned cross-language ciphertext vector, must stay byte-for-byte identical
@@ -80,7 +81,7 @@ func TestHybridV4_DeterministicVector(t *testing.T) {
 	require.NoError(t, err)
 
 	b64 := base64.StdEncoding.EncodeToString(ciphertext)
-	// Pin the exact bytes so the wire format can't drift out of sync with collect-lib.
+	// Pin the exact bytes so the wire format cannot drift out of sync with client implementations.
 	require.Equal(t, vectorCiphertextB64, b64)
 
 	// Round-trips with the matching private key.

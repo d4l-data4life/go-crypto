@@ -382,24 +382,30 @@ func TestHybridV4_PlaintextExtremes(t *testing.T) {
 	require.True(t, bytes.Equal(big, got), "1 MiB payload must round-trip byte-for-byte")
 }
 
-// TestHybridV4_RotatedRecoveryKeySlots: the same recipient identity may appear in several
-// slots (e.g. a rotated recovery key); a holder of either key opens the record — a slot that
-// fails to open with the held key falls through to the next one — and a stranger cannot.
-func TestHybridV4_RotatedRecoveryKeySlots(t *testing.T) {
+// TestHybridV4_Decrypter_RecoveryKeyRotation: key rotation is a keychain concern, not a
+// record one. A record carries ONE slot per recipient — encrypted to whichever key was
+// current — and a decrypter may hold several keys for that recipient, the current one plus
+// a retired one, so older records keep opening. The symmetric counterpart of
+// TestHybridV4_Decrypter_KeyRotation.
+func TestHybridV4_Decrypter_RecoveryKeyRotation(t *testing.T) {
 	f := newCompatFixtures(t)
-	keyA := bytes.Repeat([]byte{0x0a}, 32)
-	keyB := bytes.Repeat([]byte{0x0b}, 32)
-	blob, err := EncryptHybridV4(f.plaintext,
-		AESSlot(DecrypterMobileApp, keyA),
-		AESSlot(DecrypterMobileApp, keyB))
+	retired := bytes.Repeat([]byte{0x0a}, 32)
+	current := bytes.Repeat([]byte{0x0b}, 32)
+
+	// Encrypted to the key that was current at the time — a single recovery slot.
+	blob, err := EncryptHybridV4(f.plaintext, AESSlot(DecrypterMobileApp, retired))
 	require.NoError(t, err)
 
-	for _, key := range [][]byte{keyA, keyB} {
-		got, err := NewDecrypterWithRecoveryKey(NewPrivateKeys(), key).Decrypt(blob)
-		require.NoError(t, err)
-		require.Equal(t, f.plaintext, got)
-	}
-	_, err = NewDecrypterWithRecoveryKey(NewPrivateKeys(), bytes.Repeat([]byte{0x0c}, 32)).Decrypt(blob)
+	// A keychain listing the current key first still opens it with the retired one.
+	got, err := NewDecrypterFromKeys(
+		AESKey(DecrypterMobileApp, current),
+		AESKey(DecrypterMobileApp, retired),
+	).Decrypt(blob)
+	require.NoError(t, err)
+	require.Equal(t, f.plaintext, got)
+
+	// Drop the retired key and the old record is no longer readable.
+	_, err = NewDecrypterFromKeys(AESKey(DecrypterMobileApp, current)).Decrypt(blob)
 	require.ErrorIs(t, err, ErrHybridV4NoSlot)
 }
 
