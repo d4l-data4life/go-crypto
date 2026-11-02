@@ -9,11 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `TokenValidator.TimeFunc` sets the time used to validate `exp`, `nbf`, and `iat`. It defaults
+  to `time.Now`. Use it in tests instead of the removed global `jwt.TimeFunc`.
+
 ### Changed
 
 - Raise the minimum Go version to 1.27.
 - Lint with golangci-lint v2.14.
 - Upgrade dependencies
+- Upgrade `github.com/golang-jwt/jwt/v4` to v5.x. Match errors with `errors.Is` and the `jwt.Err*` values.
 
 ### Deprecated
 
