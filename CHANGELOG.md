@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Raise the minimum Go version to 1.27.
+
 ### Deprecated
 
 ### Removed

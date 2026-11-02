@@ -22,6 +22,7 @@ func phoneKeysFromScalar(t *testing.T, scalarHex string) (*PublicKey, *PrivateKe
 
 	priv := new(ecdsa.PrivateKey)
 	priv.Curve = secp256k1.S256()
+	//nolint:staticcheck // secp256k1 isn't supported by the ecdsa Bytes and Parse replacements
 	priv.D = new(big.Int).SetBytes(scalar)
 	priv.X, priv.Y = secp256k1.S256().ScalarBaseMult(scalar)
 	return NewPublicKey(&priv.PublicKey), NewPrivateKey(priv)
