@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Raise the minimum Go version to 1.27.
 - Lint with golangci-lint v2.14.
+- Upgrade dependencies
 
 ### Deprecated
 
@@ -43,7 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   length overflowing the block-size round-up into a slicing panic; v3 recovery branch with a
   non-block-multiple key blob panicking in CBC `CryptBlocks`).
 
-## [v1.0.0] - 
+## [v1.0.0] -
 
 ### Changed
 
