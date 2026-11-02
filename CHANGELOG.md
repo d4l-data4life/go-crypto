@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Lint with golangci-lint v2.14.
 - Upgrade dependencies
 - Upgrade `github.com/golang-jwt/jwt/v4` to v5.x. Match errors with `errors.Is` and the `jwt.Err*` values.
+- Upgrade `github.com/gofrs/uuid` v4.4.0 to `github.com/gofrs/uuid/v5` v5.5.1. Make sure
+  to import `github.com/gofrs/uuid/v5`.
 
 ### Deprecated
 
