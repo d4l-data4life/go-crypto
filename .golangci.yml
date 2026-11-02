@@ -68,6 +68,7 @@ linters:
       - path: _test\.go
         linters:
           - revive
+          - goconst
 
 formatters:
   enable:

@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Raise the minimum Go version to 1.27.
+- Lint with golangci-lint v2.14.
 
 ### Deprecated
 
