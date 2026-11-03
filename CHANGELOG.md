@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [v1.2.0] - 2026-11-03
+
+### Added
+
 - `TokenValidator.TimeFunc` sets the time used to validate `exp`, `nbf`, and `iat`. It defaults
   to `time.Now`. Use it in tests instead of the removed global `jwt.TimeFunc`.
 
@@ -20,14 +34,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Upgrade `github.com/golang-jwt/jwt/v4` to v5.x. Match errors with `errors.Is` and the `jwt.Err*` values.
 - Upgrade `github.com/gofrs/uuid` v4.4.0 to `github.com/gofrs/uuid/v5` v5.5.1. Make sure
   to import `github.com/gofrs/uuid/v5`.
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
 
 ## [v1.1.0] - 2026-07-30
 
@@ -50,12 +56,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   length overflowing the block-size round-up into a slicing panic; v3 recovery branch with a
   non-block-multiple key blob panicking in CBC `CryptBlocks`).
 
-## [v1.0.0] -
+## [v1.0.0] - 
 
 ### Changed
 
 - Move to d4l-data4life
 
-[Unreleased]: https://github.com/d4l-data4life/go-crypto/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/d4l-data4life/go-crypto/compare/v1.2.0...HEAD
+[v1.2.0]: https://github.com/d4l-data4life/go-crypto/compare/v1.1.0...v1.2.0
 [v1.1.0]: https://github.com/d4l-data4life/go-crypto/compare/v1.0.0...v1.1.0
 [v1.0.0]: https://github.com/d4l-data4life/go-crypto/releases/tag/v1.0.0
