@@ -96,6 +96,7 @@ func newECEphemeral() (ephPriv, nonce []byte, err error) {
 	if err != nil {
 		return nil, nil, err
 	}
+	//nolint:staticcheck // secp256k1 isn't supported by the ecdsa Bytes and Parse replacements
 	return leftPad32(eph.D.Bytes()), nonce, nil
 }
 
@@ -236,6 +237,7 @@ func ecdhWrapDataKey(phonePub *ecdsa.PublicKey, dataKey, ephPriv, nonce []byte) 
 	//nolint:staticcheck // elliptic.Marshal mirrors key.go; secp256k1 needs the generic encoding
 	ephPubBytes := elliptic.Marshal(curve, ephX, ephY)
 
+	//nolint:staticcheck // secp256k1 isn't supported by the ecdsa Bytes and Parse replacements
 	sharedX, _ := curve.ScalarMult(phonePub.X, phonePub.Y, ephPriv)
 	wrapKey, err := ecdhDeriveWrapKey(leftPad32(sharedX.Bytes()))
 	if err != nil {
@@ -268,6 +270,7 @@ func ecdhUnwrapDataKey(phonePriv *ecdsa.PrivateKey, blob []byte) ([]byte, error)
 	if ephX == nil {
 		return nil, ErrHybridV4Malformed
 	}
+	//nolint:staticcheck // secp256k1 isn't supported by the ecdsa Bytes and Parse replacements
 	sharedX, _ := curve.ScalarMult(ephX, ephY, phonePriv.D.Bytes())
 	wrapKey, err := ecdhDeriveWrapKey(leftPad32(sharedX.Bytes()))
 	if err != nil {

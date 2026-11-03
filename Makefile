@@ -1,4 +1,4 @@
-LINT_VERSION := v2.0
+LINT_VERSION := v2.14
 
 lint:
 	docker run --rm \

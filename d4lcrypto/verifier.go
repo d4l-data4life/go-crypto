@@ -59,6 +59,7 @@ func (v *Verifier) Verify(message []byte, signature []byte) error {
 					signature = append(asnSig.R.Bytes(), asnSig.S.Bytes()...)
 				}
 
+				//nolint:staticcheck // secp256k1 isn't supported by the ecdsa Bytes and Parse replacements
 				pubkey := secp256k1.CompressPubkey(ecPk.X, ecPk.Y)
 				if secp256k1.VerifySignature(pubkey, hashed[:], signature) {
 					return nil

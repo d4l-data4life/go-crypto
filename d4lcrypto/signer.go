@@ -49,6 +49,7 @@ func (s *Signer) Sign(message []byte) ([]byte, error) {
 	} else if ecPk, ok := s.private.key.(*ecdsa.PrivateKey); ok {
 		// use optimised code for secp256k1 curve
 		if *ecPk.Params() == *secp256k1.S256().Params() {
+			//nolint:staticcheck // secp256k1 isn't supported by the ecdsa Bytes and Parse replacements
 			sigRaw, err := secp256k1.Sign(hashed[:], ecPk.D.Bytes())
 			if err != nil {
 				return nil, err

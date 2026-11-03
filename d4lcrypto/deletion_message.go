@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	uuid "github.com/gofrs/uuid"
+	uuid "github.com/gofrs/uuid/v5"
 	"github.com/pkg/errors"
 )
 

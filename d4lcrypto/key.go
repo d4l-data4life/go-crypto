@@ -120,6 +120,7 @@ func parsePKIXPublicKeySecp256k1(derBytes []byte) (pub any, err error) {
 	if x == nil {
 		return nil, errors.New("x509: failed to unmarshal elliptic curve point")
 	}
+	//nolint:staticcheck // secp256k1 isn't supported by the ecdsa Bytes and Parse replacements
 	pub = &ecdsa.PublicKey{
 		Curve: namedCurve,
 		X:     x,
@@ -205,6 +206,7 @@ func parseECPrivateKeySecp256k1(der []byte) (key *ecdsa.PrivateKey, err error) {
 	}
 	priv := new(ecdsa.PrivateKey)
 	priv.Curve = curve
+	//nolint:staticcheck // secp256k1 isn't supported by the ecdsa Bytes and Parse replacements
 	priv.D = k
 
 	privateKey := make([]byte, (curveOrder.BitLen()+7)/8)
