@@ -1,8 +1,21 @@
-(c) 2025 D4L data4life gGmbH / All rights reserved.
+MIT License
 
-D4L owns all legal rights, title and interest in and to the Software Development Kit ("SDK"), including any intellectual property rights that subsist in the SDK.
+Copyright (c) 2025 D4L data4life gGmbH
 
-The SDK and its documentation may be accessed and used for viewing/review purposes only.
-Any usage of the SDK for other purposes, including usage for the development of applications/third-party applications shall require the conclusion of a license agreement between you and D4L.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-If you are interested in licensing the SDK for your own applications/third-party applications and/or if you’d like to contribute to the development of the SDK, please contact D4L by email to help@data4life.care.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

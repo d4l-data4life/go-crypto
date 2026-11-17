@@ -237,7 +237,7 @@ e0e40859
 
 ## License
 
-(c) 2025 D4L data4life gGmbH / All rights reserved. Please refer to our [License](./LICENSE) for further details.
+go-crypto is released under the [MIT License](./LICENSE).
 
 ## Code of conduct
 
